@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Container, InputGroup, FormControl, Button } from 'react-bootstrap';
 
-const CLIENT_ID = import.meta.env.REACT_APP_CLIENT_ID //"ac778b50303747ef91231ce047fe7c2e";
-const CLIENT_SECRET = import.meta.env.REACT_APP_CLIENT_SECRET //"4259ed2ecd444230be7b9daf82e952b0";
+const CLIENT_ID = import.meta.env.VITE_REACT_APP_CLIENT_ID 
+const CLIENT_SECRET = import.meta.env.VITE_REACT_APP_CLIENT_SECRET 
 
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const [followers, setFollowers] = useState("");
   useEffect(() => {
 
     var authParameters ={
@@ -37,9 +38,20 @@ function App() {
       .then(response => response.json())
       .then(data => { return  data.artists.items[0].id}) // 24:40
 
-    console.log("artist id is" + artistID)
 
-    // var followers = await fetch('https://api.spotify.com/v1/artists/')
+    console.log("artist id is " + artistID)
+
+    var artistjson = await fetch('https://api.spotify.com/v1/artists/' + artistID, artistParameters)
+    const data = await artistjson.json();
+    console.log(data)
+
+    const number = data.followers.total;
+    const formattedNumber = number.toLocaleString();
+    console.log(formattedNumber);
+    
+
+    setFollowers(formattedNumber);
+    // console.log(followers);
   }
 
   return (
@@ -59,7 +71,9 @@ function App() {
             />
             <Button onClick={() => {console.log("CLicked buttons")}}>Search</Button>
           </InputGroup>
+          <p>{followers !== null ? `Followers: ${followers}` : "No followers found"}</p>
         </Container>
+        
       </div>
     </>
   )
